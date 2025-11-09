@@ -1,17 +1,44 @@
-// Uncomment the code below and write your tests
-/* import axios from 'axios';
-import { throttledGetDataFromApi } from './index'; */
+// Uncomment the code below and write your
+import axios, { AxiosInstance } from 'axios';
+import { throttledGetDataFromApi } from './index';
 
 describe('throttledGetDataFromApi', () => {
+  jest.useFakeTimers();
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.restoreAllMocks();
+    throttledGetDataFromApi.cancel();
+  });
+
   test('should create instance with provided base url', async () => {
-    // Write your test here
+    const getMock = jest.fn().mockResolvedValue({ data: 'test data' });
+    const axiosCreateSpy = jest
+      .spyOn(axios, 'create')
+      .mockReturnValue({ get: getMock } as unknown as AxiosInstance);
+    await throttledGetDataFromApi('/test');
+    expect(axiosCreateSpy).toHaveBeenCalledWith({
+      baseURL: 'https://jsonplaceholder.typicode.com',
+    });
   });
 
   test('should perform request to correct provided url', async () => {
-    // Write your test here
+    const getMock = jest.fn().mockResolvedValue({ data: 'test data' });
+    jest
+      .spyOn(axios, 'create')
+      .mockReturnValue({ get: getMock } as unknown as AxiosInstance);
+    await throttledGetDataFromApi('/test');
+
+    expect(getMock).toHaveBeenCalledWith('/test');
   });
 
   test('should return response data', async () => {
-    // Write your test here
+    const getMock = jest.fn().mockResolvedValue({ data: 'test data' });
+    jest
+      .spyOn(axios, 'create')
+      .mockReturnValue({ get: getMock } as unknown as AxiosInstance);
+    const res = await throttledGetDataFromApi('/test');
+
+    expect(res).toBe('test data');
   });
 });
