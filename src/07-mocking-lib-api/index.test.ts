@@ -16,7 +16,7 @@ describe('throttledGetDataFromApi', () => {
     const axiosCreateSpy = jest
       .spyOn(axios, 'create')
       .mockReturnValue({ get: getMock } as unknown as AxiosInstance);
-    throttledGetDataFromApi('/test');
+    await throttledGetDataFromApi('/test');
     expect(axiosCreateSpy).toHaveBeenCalledWith({
       baseURL: 'https://jsonplaceholder.typicode.com',
     });
@@ -27,10 +27,18 @@ describe('throttledGetDataFromApi', () => {
     jest
       .spyOn(axios, 'create')
       .mockReturnValue({ get: getMock } as unknown as AxiosInstance);
-    throttledGetDataFromApi('/test');
+    await throttledGetDataFromApi('/test');
 
     expect(getMock).toHaveBeenCalledWith('/test');
   });
 
-  test('should return response data', async () => {});
+  test('should return response data', async () => {
+    const getMock = jest.fn().mockResolvedValue({ data: 'test data' });
+    jest
+      .spyOn(axios, 'create')
+      .mockReturnValue({ get: getMock } as unknown as AxiosInstance);
+    const res = await throttledGetDataFromApi('/test');
+
+    expect(res).toBe('test data');
+  });
 });
